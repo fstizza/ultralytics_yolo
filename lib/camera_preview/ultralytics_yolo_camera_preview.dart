@@ -105,7 +105,7 @@ class _UltralyticsYoloCameraPreviewState
               }
 
               switch (widget.predictor.runtimeType) {
-                case ObjectDetector:
+                case ObjectDetector _:
                   return StreamBuilder(
                     stream: (widget.predictor! as ObjectDetector)
                         .detectionResultStream,
@@ -124,7 +124,7 @@ class _UltralyticsYoloCameraPreviewState
                       );
                     },
                   );
-                case ImageClassifier:
+                case ImageClassifier _:
                   return widget.classificationOverlay ??
                       StreamBuilder(
                         stream: (widget.predictor! as ImageClassifier)
