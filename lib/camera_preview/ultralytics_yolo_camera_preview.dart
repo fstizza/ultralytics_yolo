@@ -104,46 +104,45 @@ class _UltralyticsYoloCameraPreviewState
                 return widget.loadingPlaceholder ?? Container();
               }
 
-              switch (widget.predictor.runtimeType) {
-                case ObjectDetector _:
-                  return StreamBuilder(
-                    stream: (widget.predictor! as ObjectDetector)
-                        .detectionResultStream,
-                    builder: (
-                      BuildContext context,
-                      AsyncSnapshot<List<DetectedObject?>?> snapshot,
-                    ) {
-                      if (snapshot.data == null) return Container();
+              if (widget.predictor is ObjectDetector) {
+                return StreamBuilder(
+                  stream: (widget.predictor! as ObjectDetector)
+                      .detectionResultStream,
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<List<DetectedObject?>?> snapshot,
+                  ) {
+                    if (snapshot.data == null) return Container();
 
-                      return CustomPaint(
-                        painter: ObjectDetectorPainter(
-                          snapshot.data! as List<DetectedObject>,
-                          widget.boundingBoxesColorList,
-                          widget.controller.value.strokeWidth,
-                        ),
-                      );
-                    },
-                  );
-                case ImageClassifier _:
-                  return widget.classificationOverlay ??
-                      StreamBuilder(
-                        stream: (widget.predictor! as ImageClassifier)
-                            .classificationResultStream,
-                        builder: (context, snapshot) {
-                          final classificationResults = snapshot.data;
+                    return CustomPaint(
+                      painter: ObjectDetectorPainter(
+                        snapshot.data! as List<DetectedObject>,
+                        widget.boundingBoxesColorList,
+                        widget.controller.value.strokeWidth,
+                      ),
+                    );
+                  },
+                );
+              } else if (widget.predictor is ImageClassifier) {
+                return widget.classificationOverlay ??
+                    StreamBuilder(
+                      stream: (widget.predictor! as ImageClassifier)
+                          .classificationResultStream,
+                      builder: (context, snapshot) {
+                        final classificationResults = snapshot.data;
 
-                          if (classificationResults == null ||
-                              classificationResults.isEmpty) {
-                            return Container();
-                          }
+                        if (classificationResults == null ||
+                            classificationResults.isEmpty) {
+                          return Container();
+                        }
 
-                          return ClassificationResultOverlay(
-                            classificationResults: classificationResults,
-                          );
-                        },
-                      );
-                default:
-                  return Container();
+                        return ClassificationResultOverlay(
+                          classificationResults: classificationResults,
+                        );
+                      },
+                    );
+              } else {
+                return Container();
               }
             }(),
 
